@@ -9,7 +9,7 @@
       htmlLang: 'en',
       brandName: 'Duang',
       navLabel: 'Primary',
-      nav: { home: 'Home', about: 'About', projects: 'Projects', contact: 'Contact' },
+      nav: { home: 'Home', about: 'About', projects: 'Projects', logs: 'Logs', collection: 'Collection', contact: 'Contact' },
       pages: {
         home: {
           title: 'Duang — Home',
@@ -98,6 +98,126 @@
             stamp: 'WORK'
           }
         },
+        logs: {
+          title: 'Duang — Logs',
+          brandSub: 'logs',
+          note: 'A running page for changes, learnings, and small progress. Not polished essays — more like useful traces left on paper.',
+          receipt: {
+            title: 'LOGS / GROWTH',
+            subtitle: 'UPDATES / NOTES / PROGRESS',
+            paperTone: 'cream',
+            header: [
+              ['TYPE', 'ongoing notes'],
+              ['FORMAT', 'short paper updates'],
+              ['GOAL', 'leave visible traces'],
+              ['RULE', 'document while moving'],
+            ],
+            sectionTitle: 'RECENT STRIPS',
+            items: [
+              ['01', 'Built an interactive receipt homepage'],
+              ['02', 'Made hover and drag feel less broken'],
+              ['03', 'Turned a single page into a small site'],
+              ['04', 'Added EN / 中文 switching'],
+              ['05', 'Still refining layout and content system'],
+            ],
+            total: 'CURRENT TRAJECTORY ....... keep building in public',
+            footer: [
+              'Logs are where the site starts feeling alive.',
+              'A good archive beats fake consistency.',
+            ],
+            stamp: 'LOGS'
+          }
+        },
+        collection: {
+          title: 'Duang — Collection',
+          brandSub: 'collection',
+          note: 'This page is for references worth keeping: visuals, websites, ideas, textures, and anything that quietly shapes taste.',
+          receipt: {
+            title: 'COLLECTION / SAVED',
+            subtitle: 'REFERENCES / TASTE / KEEPERS',
+            paperTone: 'tan',
+            header: [
+              ['TYPE', 'saved references'],
+              ['MOOD', 'quiet but sharp'],
+              ['USE', 'inspiration, not imitation'],
+              ['FILTER', 'worth keeping only'],
+            ],
+            sectionTitle: 'CURRENT SAVES',
+            items: [
+              ['01', 'Sites with strong editorial rhythm'],
+              ['02', 'Interfaces that feel tactile and warm'],
+              ['03', 'Typography pairings worth studying'],
+              ['04', 'Motion that teaches without shouting'],
+              ['05', 'Design references that age well'],
+            ],
+            total: 'COLLECTION STATUS ........ small, curated, still growing',
+            footer: [
+              'Not everything inspiring needs to become a project.',
+              'Keeping references is part of building taste.',
+            ],
+            stamp: 'SAVE'
+          }
+        },
+        logs: {
+          title: 'Duang — 成长轨迹',
+          brandSub: '成长轨迹',
+          note: '这一页是用来放更新、记录和阶段性变化的，不走长文路线，更像一张张留下痕迹的小票。',
+          receipt: {
+            title: 'LOGS / GROWTH',
+            subtitle: '更新 / 记录 / 进展',
+            paperTone: 'cream',
+            header: [
+              ['类型', '持续更新的记录'],
+              ['形式', '小票式短更新'],
+              ['目的', '把变化留下来'],
+              ['原则', '边做边记'],
+            ],
+            sectionTitle: '最近几条',
+            items: [
+              ['01', '搭好了交互式小票主页'],
+              ['02', '把 hover / 拖拽手感继续修顺'],
+              ['03', '从单页扩成了一个小站'],
+              ['04', '补上了中英文切换'],
+              ['05', '还在继续打磨排版和内容系统'],
+            ],
+            total: '当前轨迹 ............... 继续做，继续留痕',
+            footer: [
+              '成长轨迹这页会让站点开始像活人。',
+              '有记录，比假稳定更重要。',
+            ],
+            stamp: '记录'
+          }
+        },
+        collection: {
+          title: 'Duang — 收藏',
+          brandSub: '收藏',
+          note: '这一页收的不是杂物，是值得留下来的参考：网站、排版、气质、想法，还有一些暂时还没变成作品的东西。',
+          receipt: {
+            title: 'COLLECTION / SAVED',
+            subtitle: '参考 / 审美 / 留存',
+            paperTone: 'tan',
+            header: [
+              ['类型', '收藏的参考'],
+              ['气质', '安静，但要有锋利度'],
+              ['用途', '拿来启发，不照抄'],
+              ['筛选', '只留值得留下的'],
+            ],
+            sectionTitle: '当前收藏',
+            items: [
+              ['01', '有编辑感的网站节奏'],
+              ['02', '摸起来有温度的界面风格'],
+              ['03', '值得研究的字体搭配'],
+              ['04', '不吵但很准的动效'],
+              ['05', '看得久也不容易过时的参考'],
+            ],
+            total: '收藏状态 ............... 先小而准，再慢慢长',
+            footer: [
+              '不是所有喜欢的东西都要立刻做出来。',
+              '会收藏，也是建立判断的一部分。',
+            ],
+            stamp: '收藏'
+          }
+        },
         contact: {
           title: 'Duang — Contact',
           brandSub: 'contact',
@@ -133,7 +253,7 @@
       htmlLang: 'zh-CN',
       brandName: 'Duang',
       navLabel: '主导航',
-      nav: { home: '首页', about: '关于', projects: '项目', contact: '联系' },
+      nav: { home: '首页', about: '关于', projects: '项目', logs: '成长轨迹', collection: '收藏', contact: '联系' },
       pages: {
         home: {
           title: 'Duang — 首页',
@@ -222,6 +342,66 @@
             stamp: '项目'
           }
         },
+        logs: {
+          title: 'Duang — Logs',
+          brandSub: 'logs',
+          note: 'A running page for changes, learnings, and small progress. Not polished essays — more like useful traces left on paper.',
+          receipt: {
+            title: 'LOGS / GROWTH',
+            subtitle: 'UPDATES / NOTES / PROGRESS',
+            paperTone: 'cream',
+            header: [
+              ['TYPE', 'ongoing notes'],
+              ['FORMAT', 'short paper updates'],
+              ['GOAL', 'leave visible traces'],
+              ['RULE', 'document while moving'],
+            ],
+            sectionTitle: 'RECENT STRIPS',
+            items: [
+              ['01', 'Built an interactive receipt homepage'],
+              ['02', 'Made hover and drag feel less broken'],
+              ['03', 'Turned a single page into a small site'],
+              ['04', 'Added EN / 中文 switching'],
+              ['05', 'Still refining layout and content system'],
+            ],
+            total: 'CURRENT TRAJECTORY ....... keep building in public',
+            footer: [
+              'Logs are where the site starts feeling alive.',
+              'A good archive beats fake consistency.',
+            ],
+            stamp: 'LOGS'
+          }
+        },
+        collection: {
+          title: 'Duang — Collection',
+          brandSub: 'collection',
+          note: 'This page is for references worth keeping: visuals, websites, ideas, textures, and anything that quietly shapes taste.',
+          receipt: {
+            title: 'COLLECTION / SAVED',
+            subtitle: 'REFERENCES / TASTE / KEEPERS',
+            paperTone: 'tan',
+            header: [
+              ['TYPE', 'saved references'],
+              ['MOOD', 'quiet but sharp'],
+              ['USE', 'inspiration, not imitation'],
+              ['FILTER', 'worth keeping only'],
+            ],
+            sectionTitle: 'CURRENT SAVES',
+            items: [
+              ['01', 'Sites with strong editorial rhythm'],
+              ['02', 'Interfaces that feel tactile and warm'],
+              ['03', 'Typography pairings worth studying'],
+              ['04', 'Motion that teaches without shouting'],
+              ['05', 'Design references that age well'],
+            ],
+            total: 'COLLECTION STATUS ........ small, curated, still growing',
+            footer: [
+              'Not everything inspiring needs to become a project.',
+              'Keeping references is part of building taste.',
+            ],
+            stamp: 'SAVE'
+          }
+        },
         contact: {
           title: 'Duang — 联系',
           brandSub: '联系',
@@ -262,6 +442,8 @@
     home: document.querySelector('[data-nav-home]'),
     about: document.querySelector('[data-nav-about]'),
     projects: document.querySelector('[data-nav-projects]'),
+    logs: document.querySelector('[data-nav-logs]'),
+    collection: document.querySelector('[data-nav-collection]'),
     contact: document.querySelector('[data-nav-contact]'),
   };
   const langButtons = Array.from(document.querySelectorAll('[data-lang-btn]'));
@@ -275,9 +457,18 @@
   let currentLang = getInitialLang();
   let currentConfig = copy[currentLang].pages[page] || copy.en.pages.home;
 
+  const pageTones = {
+    home: 0xf7f5f1,
+    about: 0xf6f2eb,
+    projects: 0xf8f6f2,
+    logs: 0xf5f0e7,
+    collection: 0xf2ece2,
+    contact: 0xf6f2ec,
+  };
+
   const container = document.body;
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xf7f5f1);
+  scene.background = new THREE.Color(pageTones[page] || 0xf7f5f1);
 
   const camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 0.1, 100);
   camera.position.set(0, 0.25, 6.2);
@@ -395,9 +586,6 @@
       }
       return { size, lines };
     };
-
-    ctx.fillStyle = '#fbf7ee';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const paperGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     paperGradient.addColorStop(0, 'rgba(255,255,255,0.00)');
@@ -617,6 +805,8 @@
     if (navLinks.home) navLinks.home.textContent = langCopy.nav.home;
     if (navLinks.about) navLinks.about.textContent = langCopy.nav.about;
     if (navLinks.projects) navLinks.projects.textContent = langCopy.nav.projects;
+    if (navLinks.logs) navLinks.logs.textContent = langCopy.nav.logs;
+    if (navLinks.collection) navLinks.collection.textContent = langCopy.nav.collection;
     if (navLinks.contact) navLinks.contact.textContent = langCopy.nav.contact;
     langButtons.forEach(btn => btn.classList.toggle('is-active', btn.dataset.langBtn === lang));
     receiptMaterial.map.dispose();
