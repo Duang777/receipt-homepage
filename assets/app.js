@@ -209,7 +209,7 @@
     const CONTENT_WIDTH = RIGHT_SAFE - LEFT;
 
     const setMono = (weight, size, color = '#1d1a16', align = 'left') => {
-      ctx.font = `${weight} ${size}px "Courier New", monospace`;
+      ctx.font = `${weight} ${size}px "SFMono-Regular", "JetBrains Mono", "IBM Plex Mono", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", monospace`;
       ctx.fillStyle = color;
       ctx.textAlign = align;
       ctx.textBaseline = 'alphabetic';
