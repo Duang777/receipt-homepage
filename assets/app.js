@@ -105,7 +105,6 @@
           receipt: {
             title: 'LOGS / GROWTH',
             subtitle: 'UPDATES / NOTES / PROGRESS',
-            paperTone: 'cream',
             header: [
               ['TYPE', 'ongoing notes'],
               ['FORMAT', 'short paper updates'],
@@ -135,7 +134,6 @@
           receipt: {
             title: 'COLLECTION / SAVED',
             subtitle: 'REFERENCES / TASTE / KEEPERS',
-            paperTone: 'tan',
             header: [
               ['TYPE', 'saved references'],
               ['MOOD', 'quiet but sharp'],
@@ -165,7 +163,6 @@
           receipt: {
             title: 'LOGS / GROWTH',
             subtitle: '更新 / 记录 / 进展',
-            paperTone: 'cream',
             header: [
               ['类型', '持续更新的记录'],
               ['形式', '小票式短更新'],
@@ -195,7 +192,6 @@
           receipt: {
             title: 'COLLECTION / SAVED',
             subtitle: '参考 / 审美 / 留存',
-            paperTone: 'tan',
             header: [
               ['类型', '收藏的参考'],
               ['气质', '安静，但要有锋利度'],
@@ -349,7 +345,6 @@
           receipt: {
             title: 'LOGS / GROWTH',
             subtitle: 'UPDATES / NOTES / PROGRESS',
-            paperTone: 'cream',
             header: [
               ['TYPE', 'ongoing notes'],
               ['FORMAT', 'short paper updates'],
@@ -379,7 +374,6 @@
           receipt: {
             title: 'COLLECTION / SAVED',
             subtitle: 'REFERENCES / TASTE / KEEPERS',
-            paperTone: 'tan',
             header: [
               ['TYPE', 'saved references'],
               ['MOOD', 'quiet but sharp'],
@@ -457,18 +451,9 @@
   let currentLang = getInitialLang();
   let currentConfig = copy[currentLang].pages[page] || copy.en.pages.home;
 
-  const pageTones = {
-    home: 0xf7f5f1,
-    about: 0xf6f2eb,
-    projects: 0xf8f6f2,
-    logs: 0xf5f0e7,
-    collection: 0xf2ece2,
-    contact: 0xf6f2ec,
-  };
-
   const container = document.body;
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(pageTones[page] || 0xf7f5f1);
+  scene.background = new THREE.Color(0xf7f5f1);
 
   const camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 0.1, 100);
   camera.position.set(0, 0.25, 6.2);
