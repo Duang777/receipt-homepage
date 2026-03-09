@@ -49,7 +49,7 @@
             subtitle: 'PERSONAL PROFILE',
             header: [
               ['NAME', 'Duang'],
-              ['LAST YEAR', 'computer science retaker'],
+              ['RECENTLY', 'rebuilding and moving forward'],
               ['NOW', 'building, learning, shipping'],
               ['HELPER', 'a lobster assistant online'],
             ],
@@ -173,7 +173,7 @@
             subtitle: '个人简介',
             header: [
               ['名字', 'Duang'],
-              ['去年', '计算机二战生'],
+              ['近况', '在重新整理方向，继续往前走'],
               ['现在', '一边做一边学一边发'],
               ['助手', '一只在线龙虾助理'],
             ],
