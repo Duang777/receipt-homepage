@@ -204,6 +204,47 @@
     canvas.height = 2400;
     const ctx = canvas.getContext('2d');
 
+    const setMono = (weight, size, color = '#1d1a16', align = 'left') => {
+      ctx.font = `${weight} ${size}px "Courier New", monospace`;
+      ctx.fillStyle = color;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'alphabetic';
+    };
+
+    const fitText = (text, maxWidth, startSize, minSize, weight = 700) => {
+      let size = startSize;
+      while (size > minSize) {
+        setMono(weight, size);
+        if (ctx.measureText(text).width <= maxWidth) break;
+        size -= 1;
+      }
+      return size;
+    };
+
+    const wrapText = (text, maxWidth, startSize, minSize, weight = 700) => {
+      let size = startSize;
+      let lines = [];
+      while (size >= minSize) {
+        setMono(weight, size);
+        const words = text.split(' ');
+        lines = [];
+        let current = '';
+        for (const word of words) {
+          const next = current ? `${current} ${word}` : word;
+          if (ctx.measureText(next).width <= maxWidth) {
+            current = next;
+          } else {
+            if (current) lines.push(current);
+            current = word;
+          }
+        }
+        if (current) lines.push(current);
+        if (lines.length <= 2) break;
+        size -= 2;
+      }
+      return { size, lines };
+    };
+
     ctx.fillStyle = '#fbf7ee';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -236,71 +277,76 @@
     }
     ctx.stroke();
 
-    ctx.fillStyle = '#1d1a16';
-    ctx.textAlign = 'left';
-    ctx.font = '900 88px "Courier New", monospace';
+    const titleSize = fitText(pageData.title, 1020, 88, 60, 900);
+    setMono(900, titleSize, '#1d1a16');
     ctx.fillText(pageData.title, 84, 178);
 
-    ctx.font = '700 32px "Courier New", monospace';
-    ctx.fillStyle = '#6b645a';
+    const subtitleSize = fitText(pageData.subtitle, 940, 32, 24, 700);
+    setMono(700, subtitleSize, '#6b645a');
     ctx.fillText(pageData.subtitle, 86, 232);
 
-    ctx.fillStyle = '#24211d';
-    ctx.font = '700 42px "Courier New", monospace';
+    const labelX = 86;
+    const valueX = 560;
+    const valueMaxWidth = 520;
     let y = 356;
     for (const [label, value] of pageData.header) {
-      ctx.fillText((label + ' .........').padEnd(16, ' ') + ' ' + value, 86, y);
+      setMono(700, 38, '#24211d');
+      ctx.fillText(`${label} .........`, labelX, y);
+      const valueSize = fitText(value, valueMaxWidth, 38, 28, 700);
+      setMono(700, valueSize, '#24211d');
+      ctx.fillText(value, valueX, y);
       y += 58;
     }
 
-    ctx.fillStyle = '#7c7368';
-    ctx.font = '600 28px "Courier New", monospace';
+    setMono(600, 28, '#7c7368');
     ctx.fillText('---------------------------------------------', 86, y + 26);
     ctx.fillText(pageData.sectionTitle, 86, y + 80);
     ctx.fillText('---------------------------------------------', 86, y + 128);
 
-    ctx.fillStyle = '#21201d';
-    ctx.font = '700 36px "Courier New", monospace';
     y += 220;
     for (const [code, label] of pageData.items) {
+      setMono(700, 34, '#21201d');
       ctx.fillText(code, 90, y);
-      ctx.fillText(label, 220, y);
-      y += 70;
+      const wrapped = wrapText(label, 720, 34, 26, 700);
+      setMono(700, wrapped.size, '#21201d');
+      const lineHeight = wrapped.size + 10;
+      wrapped.lines.forEach((line, idx) => ctx.fillText(line, 220, y + idx * lineHeight));
+      y += wrapped.lines.length > 1 ? lineHeight * wrapped.lines.length + 20 : 66;
     }
 
-    ctx.fillStyle = '#7c7368';
-    ctx.font = '600 28px "Courier New", monospace';
+    setMono(600, 28, '#7c7368');
     ctx.fillText('---------------------------------------------', 86, y + 8);
 
-    ctx.fillStyle = '#22201d';
-    ctx.font = '900 42px "Courier New", monospace';
-    ctx.fillText(pageData.total, 86, y + 92);
+    const totalWrapped = wrapText(pageData.total, 980, 40, 28, 900);
+    setMono(900, totalWrapped.size, '#22201d');
+    let totalY = y + 92;
+    const totalLineHeight = totalWrapped.size + 12;
+    totalWrapped.lines.forEach((line, idx) => ctx.fillText(line, 86, totalY + idx * totalLineHeight));
 
-    ctx.fillStyle = '#6d665e';
-    ctx.font = '700 28px "Courier New", monospace';
-    let fy = y + 170;
+    let fy = totalY + totalWrapped.lines.length * totalLineHeight + 36;
     for (const line of pageData.footer) {
-      ctx.fillText(line, 86, fy);
-      fy += 48;
+      const wrappedFooter = wrapText(line, 980, 26, 22, 700);
+      setMono(700, wrappedFooter.size, '#6d665e');
+      const footerLineHeight = wrappedFooter.size + 10;
+      wrappedFooter.lines.forEach((row, idx) => ctx.fillText(row, 86, fy + idx * footerLineHeight));
+      fy += wrappedFooter.lines.length * footerLineHeight + 18;
     }
 
     ctx.save();
-    ctx.translate(936, fy + 120);
+    ctx.translate(936, Math.min(fy + 90, 2200));
     ctx.rotate(-0.08);
     ctx.strokeStyle = 'rgba(255, 120, 108, 0.85)';
     ctx.lineWidth = 7;
     ctx.strokeRect(-144, -56, 288, 112);
     ctx.fillStyle = 'rgba(255, 120, 108, 0.14)';
     ctx.fillRect(-144, -56, 288, 112);
-    ctx.fillStyle = '#ff6f62';
-    ctx.font = '900 42px "Courier New", monospace';
-    ctx.textAlign = 'center';
+    setMono(900, 42, '#ff6f62', 'center');
     ctx.fillText(pageData.stamp, 0, 14);
     ctx.restore();
 
     ctx.strokeStyle = 'rgba(0,0,0,0.03)';
     ctx.lineWidth = 2;
-    for (let line = 0; line < 20; line++) {
+    for (let line = 0; line < 22; line++) {
       const lineY = 760 + line * 72;
       ctx.beginPath();
       ctx.moveTo(86, lineY + 18);
