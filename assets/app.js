@@ -204,6 +204,10 @@
     canvas.height = 2400;
     const ctx = canvas.getContext('2d');
 
+    const LEFT = 86;
+    const RIGHT_SAFE = 1010;
+    const CONTENT_WIDTH = RIGHT_SAFE - LEFT;
+
     const setMono = (weight, size, color = '#1d1a16', align = 'left') => {
       ctx.font = `${weight} ${size}px "Courier New", monospace`;
       ctx.fillStyle = color;
@@ -277,17 +281,17 @@
     }
     ctx.stroke();
 
-    const titleSize = fitText(pageData.title, 1020, 88, 60, 900);
+    const titleSize = fitText(pageData.title, CONTENT_WIDTH - 120, 74, 46, 900);
     setMono(900, titleSize, '#1d1a16');
-    ctx.fillText(pageData.title, 84, 178);
+    ctx.fillText(pageData.title, LEFT, 178);
 
-    const subtitleSize = fitText(pageData.subtitle, 940, 32, 24, 700);
+    const subtitleSize = fitText(pageData.subtitle, CONTENT_WIDTH - 180, 28, 20, 700);
     setMono(700, subtitleSize, '#6b645a');
-    ctx.fillText(pageData.subtitle, 86, 232);
+    ctx.fillText(pageData.subtitle, LEFT, 232);
 
-    const labelX = 86;
-    const valueX = 560;
-    const valueMaxWidth = 520;
+    const labelX = LEFT;
+    const valueX = 430;
+    const valueMaxWidth = RIGHT_SAFE - valueX - 24;
     let y = 356;
     for (const [label, value] of pageData.header) {
       setMono(700, 38, '#24211d');
@@ -299,41 +303,44 @@
     }
 
     setMono(600, 28, '#7c7368');
-    ctx.fillText('---------------------------------------------', 86, y + 26);
-    ctx.fillText(pageData.sectionTitle, 86, y + 80);
-    ctx.fillText('---------------------------------------------', 86, y + 128);
+    ctx.fillText('---------------------------------------------', LEFT, y + 26);
+    const sectionSize = fitText(pageData.sectionTitle, CONTENT_WIDTH - 160, 26, 20, 700);
+    setMono(700, sectionSize, '#7c7368');
+    ctx.fillText(pageData.sectionTitle, LEFT, y + 80);
+    setMono(600, 28, '#7c7368');
+    ctx.fillText('---------------------------------------------', LEFT, y + 128);
 
-    y += 220;
+    y += 198;
     for (const [code, label] of pageData.items) {
-      setMono(700, 34, '#21201d');
-      ctx.fillText(code, 90, y);
-      const wrapped = wrapText(label, 720, 34, 26, 700);
+      setMono(700, 30, '#21201d');
+      ctx.fillText(code, LEFT + 2, y);
+      const wrapped = wrapText(label, RIGHT_SAFE - 250, 30, 22, 700);
       setMono(700, wrapped.size, '#21201d');
       const lineHeight = wrapped.size + 10;
-      wrapped.lines.forEach((line, idx) => ctx.fillText(line, 220, y + idx * lineHeight));
-      y += wrapped.lines.length > 1 ? lineHeight * wrapped.lines.length + 20 : 66;
+      wrapped.lines.forEach((line, idx) => ctx.fillText(line, 208, y + idx * lineHeight));
+      y += wrapped.lines.length > 1 ? lineHeight * wrapped.lines.length + 18 : 60;
     }
 
     setMono(600, 28, '#7c7368');
-    ctx.fillText('---------------------------------------------', 86, y + 8);
+    ctx.fillText('---------------------------------------------', LEFT, y + 8);
 
-    const totalWrapped = wrapText(pageData.total, 980, 40, 28, 900);
+    const totalWrapped = wrapText(pageData.total, CONTENT_WIDTH - 120, 34, 24, 900);
     setMono(900, totalWrapped.size, '#22201d');
-    let totalY = y + 92;
-    const totalLineHeight = totalWrapped.size + 12;
-    totalWrapped.lines.forEach((line, idx) => ctx.fillText(line, 86, totalY + idx * totalLineHeight));
+    let totalY = y + 86;
+    const totalLineHeight = totalWrapped.size + 10;
+    totalWrapped.lines.forEach((line, idx) => ctx.fillText(line, LEFT, totalY + idx * totalLineHeight));
 
-    let fy = totalY + totalWrapped.lines.length * totalLineHeight + 36;
+    let fy = totalY + totalWrapped.lines.length * totalLineHeight + 32;
     for (const line of pageData.footer) {
-      const wrappedFooter = wrapText(line, 980, 26, 22, 700);
+      const wrappedFooter = wrapText(line, CONTENT_WIDTH - 120, 24, 20, 700);
       setMono(700, wrappedFooter.size, '#6d665e');
       const footerLineHeight = wrappedFooter.size + 10;
-      wrappedFooter.lines.forEach((row, idx) => ctx.fillText(row, 86, fy + idx * footerLineHeight));
-      fy += wrappedFooter.lines.length * footerLineHeight + 18;
+      wrappedFooter.lines.forEach((row, idx) => ctx.fillText(row, LEFT, fy + idx * footerLineHeight));
+      fy += wrappedFooter.lines.length * footerLineHeight + 16;
     }
 
     ctx.save();
-    ctx.translate(936, Math.min(fy + 90, 2200));
+    ctx.translate(884, Math.min(fy + 82, 2180));
     ctx.rotate(-0.08);
     ctx.strokeStyle = 'rgba(255, 120, 108, 0.85)';
     ctx.lineWidth = 7;
