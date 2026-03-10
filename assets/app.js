@@ -917,6 +917,8 @@
     pendingPage: null,
     swapped: false,
     historyMode: 'push',
+    progress: 0,
+    strength: 0,
     uiOpacity: 1,
     uiOffsetX: 0,
     meshX: 0,
@@ -1076,6 +1078,25 @@
       siteUiEl.style.opacity = '1';
       siteUiEl.style.transform = 'translate3d(0, 0, 0)';
     }
+  }
+
+  function getTransitionWave(time, columnNorm, rowNorm) {
+    const strength = transitionState.strength;
+    if (strength <= 0.0001) return { x: 0, y: 0, z: 0 };
+    const dir = transitionState.direction;
+    const phaseProgress = transitionState.progress;
+    const travel = transitionState.phase === 'leave' ? phaseProgress : 1 - phaseProgress;
+    const edgeLead = dir > 0 ? columnNorm : 1 - columnNorm;
+    const crest = Math.exp(-Math.pow(edgeLead - Math.min(1, travel * 1.1), 2) / 0.022);
+    const wake = Math.exp(-Math.pow(edgeLead - Math.max(0, travel * 0.82), 2) / 0.08);
+    const rowInfluence = Math.pow(rowNorm, 0.88);
+    const baseRipple = Math.sin(time * 14 + columnNorm * 12 - rowNorm * 9 + dir * 0.9);
+    const trailingRipple = Math.sin(time * 8.5 + edgeLead * 19 + rowNorm * 10.5);
+    const foldLift = Math.sin(Math.min(1, rowNorm * 1.1) * Math.PI) * 0.018 * strength;
+    const z = (crest * 0.34 + wake * trailingRipple * 0.06 + baseRipple * 0.03) * rowInfluence * strength;
+    const x = dir * (crest * 0.06 + wake * 0.02 + baseRipple * 0.006) * rowInfluence * strength;
+    const y = foldLift + Math.sin((columnNorm * 0.9 + rowNorm * 0.8) * Math.PI) * 0.01 * strength;
+    return { x, y, z };
   }
 
   function startPageTransition(targetPage, explicitDirection, options = {}) {
@@ -1324,11 +1345,14 @@
     }
   }
 
-  function updateGeometry() {
+  function updateGeometry(time) {
     const positionAttr = receiptGeometry.attributes.position;
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i].current;
-      positionAttr.setXYZ(i, p.x, p.y, p.z);
+      const columnNorm = (i % cols) / (cols - 1);
+      const rowNorm = Math.floor(i / cols) / (rows - 1);
+      const wave = getTransitionWave(time, columnNorm, rowNorm);
+      positionAttr.setXYZ(i, p.x + wave.x, p.y + wave.y, p.z + wave.z);
     }
     positionAttr.needsUpdate = true;
     receiptGeometry.computeVertexNormals();
@@ -1352,6 +1376,8 @@
 
     if (transitionState.phase !== 'idle') {
       const progress = Math.min(1, (now - transitionState.startedAt) / transitionState.duration);
+      transitionState.progress = progress;
+      transitionState.strength = Math.sin(progress * Math.PI);
       setTransitionPose(progress, transitionState.direction, transitionState.phase);
       if (transitionState.phase === 'leave' && !transitionState.swapped && progress >= 0.5) {
         transitionState.swapped = true;
@@ -1362,12 +1388,14 @@
         transitionState.phase = 'idle';
         transitionState.pendingPage = null;
         transitionState.swapped = false;
+        transitionState.progress = 0;
+        transitionState.strength = 0;
         clearTransitionPose();
         document.body.classList.remove('is-page-transitioning');
       }
     }
 
-    updateGeometry();
+    updateGeometry(time);
     const baseShadowOpacity = 0.06 + Math.min(0.06, Math.abs(particles[idx(Math.floor(cols / 2), rows - 1)].current.z) * 0.12);
     contactShadow.material.opacity = baseShadowOpacity * transitionState.shadowFactor;
     renderer.render(scene, camera);
