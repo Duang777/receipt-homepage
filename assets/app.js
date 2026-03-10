@@ -10,6 +10,12 @@
       brandName: 'Duang',
       navLabel: 'Primary',
       nav: { home: 'Home', about: 'About', projects: 'Projects', logs: 'Logs', collection: 'Collection', contact: 'Contact' },
+      pager: {
+        prev: 'Previous',
+        next: 'Next',
+        prevAria: 'Go to previous page',
+        nextAria: 'Go to next page',
+      },
       pages: {
         home: {
           title: 'Duang — Home',
@@ -254,6 +260,12 @@
       brandName: 'Duang',
       navLabel: '主导航',
       nav: { home: '首页', about: '关于', projects: '项目', logs: '成长轨迹', collection: '收藏', contact: '联系' },
+      pager: {
+        prev: '上一页',
+        next: '下一页',
+        prevAria: '前往上一页',
+        nextAria: '前往下一页',
+      },
       pages: {
         home: {
           title: 'Duang — 首页',
@@ -441,10 +453,51 @@
   const noteEl = document.querySelector('[data-corner-note]');
   const navEl = document.querySelector('[data-nav]');
   const siteUiEl = document.querySelector('.site-ui');
+  const pageOrder = ['home', 'about', 'projects', 'logs', 'collection', 'contact'];
+  const pageFiles = {
+    home: './index.html',
+    about: './about.html',
+    projects: './projects.html',
+    logs: './logs.html',
+    collection: './collection.html',
+    contact: './contact.html',
+  };
   const quickLinksEl = document.createElement('div');
   quickLinksEl.className = 'quick-links';
   quickLinksEl.hidden = true;
-  if (siteUiEl) siteUiEl.appendChild(quickLinksEl);
+  const sidePagerEl = document.createElement('div');
+  sidePagerEl.className = 'side-pager';
+  const prevPageLinkEl = document.createElement('a');
+  prevPageLinkEl.className = 'page-rail is-prev';
+  const prevPageCopyEl = document.createElement('span');
+  prevPageCopyEl.className = 'page-rail-copy';
+  const prevPageMetaEl = document.createElement('span');
+  prevPageMetaEl.className = 'page-rail-kicker';
+  const prevPageLabelEl = document.createElement('span');
+  prevPageLabelEl.className = 'page-rail-label';
+  prevPageCopyEl.append(prevPageMetaEl, prevPageLabelEl);
+  const prevPageArrowEl = document.createElement('span');
+  prevPageArrowEl.className = 'page-rail-arrow';
+  prevPageArrowEl.textContent = '←';
+  prevPageLinkEl.append(prevPageArrowEl, prevPageCopyEl);
+  const nextPageLinkEl = document.createElement('a');
+  nextPageLinkEl.className = 'page-rail is-next';
+  const nextPageCopyEl = document.createElement('span');
+  nextPageCopyEl.className = 'page-rail-copy';
+  const nextPageMetaEl = document.createElement('span');
+  nextPageMetaEl.className = 'page-rail-kicker';
+  const nextPageLabelEl = document.createElement('span');
+  nextPageLabelEl.className = 'page-rail-label';
+  nextPageCopyEl.append(nextPageMetaEl, nextPageLabelEl);
+  const nextPageArrowEl = document.createElement('span');
+  nextPageArrowEl.className = 'page-rail-arrow';
+  nextPageArrowEl.textContent = '→';
+  nextPageLinkEl.append(nextPageCopyEl, nextPageArrowEl);
+  sidePagerEl.append(prevPageLinkEl, nextPageLinkEl);
+  if (siteUiEl) {
+    siteUiEl.appendChild(quickLinksEl);
+    siteUiEl.appendChild(sidePagerEl);
+  }
   const navLinks = {
     home: document.querySelector('[data-nav-home]'),
     about: document.querySelector('[data-nav-about]'),
@@ -880,6 +933,29 @@
     quickLinksEl.hidden = false;
   }
 
+  function renderSidePager(lang) {
+    const langCopy = copy[lang] || copy[defaultLang];
+    const pageIndex = pageOrder.indexOf(page);
+    if (pageIndex === -1) {
+      sidePagerEl.hidden = true;
+      return;
+    }
+    const prevPage = pageOrder[(pageIndex - 1 + pageOrder.length) % pageOrder.length];
+    const nextPage = pageOrder[(pageIndex + 1) % pageOrder.length];
+
+    prevPageLinkEl.href = pageFiles[prevPage];
+    prevPageLinkEl.setAttribute('aria-label', `${langCopy.pager.prevAria}: ${langCopy.nav[prevPage]}`);
+    prevPageMetaEl.textContent = langCopy.pager.prev;
+    prevPageLabelEl.textContent = langCopy.nav[prevPage];
+
+    nextPageLinkEl.href = pageFiles[nextPage];
+    nextPageLinkEl.setAttribute('aria-label', `${langCopy.pager.nextAria}: ${langCopy.nav[nextPage]}`);
+    nextPageMetaEl.textContent = langCopy.pager.next;
+    nextPageLabelEl.textContent = langCopy.nav[nextPage];
+
+    sidePagerEl.hidden = false;
+  }
+
   const dragState = { active: false, index: -1, point: new THREE.Vector3(), radius: 2.25 };
   const hoverState = { active: false, index: -1, strength: 0 };
 
@@ -893,6 +969,7 @@
     if (noteEl) noteEl.textContent = pageCopy.note;
     if (navEl) navEl.setAttribute('aria-label', langCopy.navLabel);
     renderQuickLinks(pageCopy.actions || []);
+    renderSidePager(lang);
     applyPageTheme(page);
     if (navLinks.home) navLinks.home.textContent = langCopy.nav.home;
     if (navLinks.about) navLinks.about.textContent = langCopy.nav.about;
@@ -914,6 +991,17 @@
 
   langButtons.forEach(btn => {
     btn.addEventListener('click', () => setLanguage(btn.dataset.langBtn));
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+    const activeTag = document.activeElement?.tagName;
+    if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
+    if (event.key === 'ArrowLeft') {
+      prevPageLinkEl.click();
+    } else if (event.key === 'ArrowRight') {
+      nextPageLinkEl.click();
+    }
   });
 
   function updatePointer(event) {
