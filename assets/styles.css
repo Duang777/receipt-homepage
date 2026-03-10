@@ -194,17 +194,22 @@ canvas { display: block; }
   gap: 12px;
   padding: 14px 16px;
   text-decoration: none;
-  color: #161411;
-  background:
-    linear-gradient(180deg, rgba(252,248,240,0.99) 0%, rgba(246,238,227,0.99) 52%, rgba(241,232,220,0.98) 100%),
-    repeating-linear-gradient(180deg, rgba(0,0,0,0.018) 0 1px, transparent 1px 10px),
-    radial-gradient(circle at 16% 18%, rgba(255,255,255,0.55), transparent 28%);
-  border: 1px solid rgba(162,144,120,0.2);
+  color: #181512;
+  font-family: "SFMono-Regular", "JetBrains Mono", "IBM Plex Mono", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", monospace;
+  background-color: #fbf7ee;
+  background-image:
+    radial-gradient(circle at 12px 18px, rgba(110,97,84,0.06) 0 1.1px, transparent 1.3px),
+    radial-gradient(circle at 34px 42px, rgba(110,97,84,0.045) 0 1px, transparent 1.25px),
+    radial-gradient(circle at 78px 26px, rgba(110,97,84,0.05) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 128px 52px, rgba(110,97,84,0.045) 0 1px, transparent 1.25px),
+    radial-gradient(circle at 86% 30%, rgba(255,255,255,0.34), transparent 22%),
+    repeating-linear-gradient(180deg, rgba(0,0,0,0.022) 0 1px, transparent 1px 11px),
+    linear-gradient(180deg, rgba(255,255,255,0.22), rgba(0,0,0,0.035));
+  border: 1px solid rgba(164,146,121,0.22);
   box-shadow:
     0 14px 28px rgba(0,0,0,0.07),
-    inset 0 1px 0 rgba(255,255,255,0.86),
-    inset 0 -1px 0 rgba(190,173,152,0.2),
-    inset 10px 0 18px rgba(255,255,255,0.12);
+    inset 0 1px 0 rgba(255,255,255,0.78),
+    inset 0 -1px 0 rgba(184,167,146,0.2);
   transform: translateY(-50%);
   transition: transform .34s cubic-bezier(.22,1,.36,1), box-shadow .34s ease, filter .34s ease;
   pointer-events: auto;
@@ -215,20 +220,20 @@ canvas { display: block; }
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(135deg, rgba(255,255,255,0.34), transparent 44%),
-    linear-gradient(0deg, rgba(107,96,83,0.04), transparent 24%, transparent 76%, rgba(107,96,83,0.03));
+    linear-gradient(135deg, rgba(255,255,255,0.22), transparent 46%),
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.05));
+  mix-blend-mode: multiply;
+  opacity: 0.45;
   pointer-events: none;
 }
 .page-rail::after {
   content: "";
   position: absolute;
-  top: 9px;
-  bottom: 9px;
+  top: 10px;
+  bottom: 10px;
   width: 12px;
-  background:
-    radial-gradient(circle at center, rgba(178,159,137,0.65) 1.25px, transparent 1.9px) center / 12px 13px repeat-y,
-    linear-gradient(180deg, rgba(255,255,255,0.28), rgba(0,0,0,0.02));
-  opacity: 0.8;
+  background: radial-gradient(circle at center, rgba(176,160,140,0.62) 1.2px, transparent 1.9px) center / 12px 13px repeat-y;
+  opacity: 0.76;
   pointer-events: none;
 }
 .page-rail:hover {
@@ -290,27 +295,27 @@ canvas { display: block; }
   align-items: flex-end;
 }
 .page-rail-kicker {
-  font-size: 10px;
-  letter-spacing: 0.16em;
+  font-size: 9px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(24,24,24,0.42);
 }
 .page-rail-label {
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   white-space: nowrap;
 }
 .page-rail-arrow {
   position: relative;
   z-index: 1;
   flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: grid;
   place-items: center;
   color: rgba(24,24,24,0.72);
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1;
   background: transparent;
   box-shadow: none;
@@ -353,7 +358,12 @@ body.is-page-transitioning {
     gap: 8px;
     justify-content: center;
     flex-direction: column;
-    background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(245,239,232,0.99) 100%);
+    background-color: #fbf7ee;
+    background-image:
+      radial-gradient(circle at 16px 18px, rgba(110,97,84,0.06) 0 1.05px, transparent 1.3px),
+      radial-gradient(circle at 24px 46px, rgba(110,97,84,0.05) 0 1px, transparent 1.2px),
+      repeating-linear-gradient(180deg, rgba(0,0,0,0.022) 0 1px, transparent 1px 10px),
+      linear-gradient(180deg, rgba(255,255,255,0.18), rgba(0,0,0,0.04));
   }
   .page-rail::after {
     display: none;
@@ -390,9 +400,9 @@ body.is-page-transitioning {
     letter-spacing: 0.08em;
   }
   .page-rail-arrow {
-    width: 24px;
-    height: 24px;
-    font-size: 16px;
+    width: 20px;
+    height: 20px;
+    font-size: 17px;
   }
   .page-rail-copy::before {
     display: none;
