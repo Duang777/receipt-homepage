@@ -217,28 +217,32 @@
         contact: {
           title: 'Duang — Contact',
           brandSub: 'contact',
-          note: 'Keeping contact simple for now. If the site keeps growing, forms, email delivery, or a small backend can be added later.',
+          note: 'Keeping contact simple for now. The project repo is available directly on GitHub, so at least this part should not pretend to be mysterious.',
+          actions: [
+            { label: 'GitHub Repo', href: 'https://github.com/Duang777/receipt-homepage' },
+            { label: 'GitHub Profile', href: 'https://github.com/Duang777' },
+          ],
           receipt: {
             title: 'CONTACT / LINKS',
             subtitle: 'WAYS TO REACH OUT',
             header: [
-              ['CHANNEL', 'github pages for now'],
+              ['CHANNEL', 'github available now'],
               ['FORMAT', 'simple static site'],
-              ['NEXT', 'custom domain optional'],
+              ['REPO', 'Duang777/receipt-homepage'],
               ['NOTE', 'can expand later'],
             ],
             sectionTitle: 'AVAILABLE NOW',
             items: [
-              ['GH', 'GitHub and repository links'],
+              ['GH', 'github.com/Duang777'],
+              ['RP', 'receipt-homepage repository'],
               ['XS', 'Xiaohongshu content identity'],
               ['PG', 'Personal homepage updates'],
               ['ML', 'Email or form can be added later'],
-              ['DM', 'More channels on request'],
             ],
-            total: 'CONTACT STATUS ........... open to expansion',
+            total: 'CONTACT STATUS ........... repo link restored',
             footer: [
               'Simple first, then useful, then fancy if needed.',
-              'No need to overbuild contact before the site is ready.',
+              'At least the GitHub link is back where it belongs.',
             ],
             stamp: 'CONTACT'
           }
@@ -399,28 +403,32 @@
         contact: {
           title: 'Duang — 联系',
           brandSub: '联系',
-          note: '联系页现在先保持轻一点。之后如果你真要表单、邮箱投递或者留言板，再接动态能力也不迟。',
+          note: '联系页现在先保持轻一点，不过 GitHub 仓库还是得老老实实挂出来，不然就显得我像失忆了。',
+          actions: [
+            { label: '项目仓库', href: 'https://github.com/Duang777/receipt-homepage' },
+            { label: 'GitHub 主页', href: 'https://github.com/Duang777' },
+          ],
           receipt: {
             title: 'CONTACT / LINKS',
             subtitle: '当前可用的联系入口',
             header: [
-              ['渠道', '目前先挂 GitHub Pages'],
+              ['渠道', 'GitHub 现在可直接访问'],
               ['形式', '轻量静态站'],
-              ['下一步', '可再接独立域名'],
+              ['仓库', 'Duang777/receipt-homepage'],
               ['说明', '后续还能继续扩展'],
             ],
             sectionTitle: '现在能用的',
             items: [
-              ['GH', 'GitHub 与仓库链接'],
+              ['GH', 'github.com/Duang777'],
+              ['RP', 'receipt-homepage 项目仓库'],
               ['XS', '小红书账号内容'],
               ['PG', '个人主页后续更新'],
               ['ML', '邮箱或表单可后接'],
-              ['DM', '需要的话还能继续加入口'],
             ],
-            total: '联系状态 ............... 正在逐步补齐',
+            total: '联系状态 ............... GitHub 仓库已挂回',
             footer: [
               '先简单，再实用，再看要不要做得更花。',
-              '在网站主体没稳之前，联系页没必要过度施工。',
+              '至少 GitHub 这次已经放回该放的位置了。',
             ],
             stamp: '联系'
           }
@@ -432,6 +440,11 @@
   const brandSubEl = document.querySelector('[data-brand-sub]');
   const noteEl = document.querySelector('[data-corner-note]');
   const navEl = document.querySelector('[data-nav]');
+  const siteUiEl = document.querySelector('.site-ui');
+  const quickLinksEl = document.createElement('div');
+  quickLinksEl.className = 'quick-links';
+  quickLinksEl.hidden = true;
+  if (siteUiEl) siteUiEl.appendChild(quickLinksEl);
   const navLinks = {
     home: document.querySelector('[data-nav-home]'),
     about: document.querySelector('[data-nav-about]'),
@@ -451,9 +464,72 @@
   let currentLang = getInitialLang();
   let currentConfig = copy[currentLang].pages[page] || copy.en.pages.home;
 
+  const pageThemes = {
+    home: {
+      css: {
+        '--bg': '#ffffff',
+        '--bg-top': '#ffffff',
+        '--bg-mid': '#ffffff',
+        '--bg-bottom': '#ffffff',
+        '--chip': 'rgba(255,255,255,0.84)',
+      },
+      sceneBg: 0xffffff,
+    },
+    about: {
+      css: {
+        '--bg': '#f7f5f1',
+        '--bg-top': '#fbfaf8',
+        '--bg-mid': '#f5f2ee',
+        '--bg-bottom': '#f0ece7',
+        '--chip': 'rgba(255,255,255,0.82)',
+      },
+      sceneBg: 0xf7f5f1,
+    },
+    projects: {
+      css: {
+        '--bg': '#f8f6f2',
+        '--bg-top': '#fcfbf8',
+        '--bg-mid': '#f6f2ec',
+        '--bg-bottom': '#efe9e1',
+        '--chip': 'rgba(255,255,255,0.82)',
+      },
+      sceneBg: 0xf8f6f2,
+    },
+    logs: {
+      css: {
+        '--bg': '#f6f3ee',
+        '--bg-top': '#faf7f1',
+        '--bg-mid': '#f2ede6',
+        '--bg-bottom': '#ece5dc',
+        '--chip': 'rgba(255,255,255,0.8)',
+      },
+      sceneBg: 0xf6f3ee,
+    },
+    collection: {
+      css: {
+        '--bg': '#f8f4ee',
+        '--bg-top': '#fcf8f2',
+        '--bg-mid': '#f4eee5',
+        '--bg-bottom': '#ede4da',
+        '--chip': 'rgba(255,255,255,0.8)',
+      },
+      sceneBg: 0xf8f4ee,
+    },
+    contact: {
+      css: {
+        '--bg': '#f7f4ef',
+        '--bg-top': '#fbf8f4',
+        '--bg-mid': '#f3eee7',
+        '--bg-bottom': '#ece5dc',
+        '--chip': 'rgba(255,255,255,0.8)',
+      },
+      sceneBg: 0xf7f4ef,
+    },
+  };
+
   const container = document.body;
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xf7f5f1);
+  scene.background = new THREE.Color((pageThemes[page] || pageThemes.home).sceneBg);
 
   const camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 0.1, 100);
   camera.position.set(0, 0.25, 6.2);
@@ -571,6 +647,9 @@
       }
       return { size, lines };
     };
+
+    ctx.fillStyle = '#fbf7ee';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const paperGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     paperGradient.addColorStop(0, 'rgba(255,255,255,0.00)');
@@ -775,6 +854,32 @@
   receiptMesh.castShadow = true;
   scene.add(receiptMesh);
 
+  function applyPageTheme(pageName) {
+    const theme = pageThemes[pageName] || pageThemes.home;
+    Object.entries(theme.css).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(key, value);
+    });
+    scene.background = new THREE.Color(theme.sceneBg);
+  }
+
+  function renderQuickLinks(actions = []) {
+    if (!quickLinksEl) return;
+    quickLinksEl.innerHTML = '';
+    if (!actions.length) {
+      quickLinksEl.hidden = true;
+      return;
+    }
+    actions.forEach(({ label, href }) => {
+      const link = document.createElement('a');
+      link.href = href;
+      link.textContent = label;
+      link.target = '_blank';
+      link.rel = 'noreferrer';
+      quickLinksEl.appendChild(link);
+    });
+    quickLinksEl.hidden = false;
+  }
+
   const dragState = { active: false, index: -1, point: new THREE.Vector3(), radius: 2.25 };
   const hoverState = { active: false, index: -1, strength: 0 };
 
@@ -787,6 +892,8 @@
     if (brandSubEl) brandSubEl.textContent = pageCopy.brandSub;
     if (noteEl) noteEl.textContent = pageCopy.note;
     if (navEl) navEl.setAttribute('aria-label', langCopy.navLabel);
+    renderQuickLinks(pageCopy.actions || []);
+    applyPageTheme(page);
     if (navLinks.home) navLinks.home.textContent = langCopy.nav.home;
     if (navLinks.about) navLinks.about.textContent = langCopy.nav.about;
     if (navLinks.projects) navLinks.projects.textContent = langCopy.nav.projects;
