@@ -1,8 +1,7 @@
 
 (() => {
-  const page = document.body.dataset.page || 'home';
+  const initialPage = document.body.dataset.page || 'home';
   const PREFERRED_LANG_KEY = 'duang-site-lang';
-  const PAGE_TRANSITION_KEY = 'duang-site-page-transition';
   const defaultLang = 'en';
 
   const copy = {
@@ -517,7 +516,8 @@
   }
 
   let currentLang = getInitialLang();
-  let currentConfig = copy[currentLang].pages[page] || copy.en.pages.home;
+  let currentPage = initialPage;
+  let currentConfig = copy[currentLang].pages[currentPage] || copy.en.pages.home;
 
   const pageThemes = {
     home: {
@@ -584,7 +584,7 @@
 
   const container = document.body;
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color((pageThemes[page] || pageThemes.home).sceneBg);
+  scene.background = new THREE.Color((pageThemes[currentPage] || pageThemes.home).sceneBg);
 
   const camera = new THREE.PerspectiveCamera(32, window.innerWidth / window.innerHeight, 0.1, 100);
   camera.position.set(0, 0.25, 6.2);
@@ -913,9 +913,10 @@
     phase: 'idle',
     direction: 1,
     startedAt: 0,
-    duration: 720,
-    targetUrl: null,
-    navigated: false,
+    duration: 760,
+    pendingPage: null,
+    swapped: false,
+    historyMode: 'push',
     uiOpacity: 1,
     uiOffsetX: 0,
     meshX: 0,
@@ -952,7 +953,7 @@
 
   function renderSidePager(lang) {
     const langCopy = copy[lang] || copy[defaultLang];
-    const pageIndex = pageOrder.indexOf(page);
+    const pageIndex = pageOrder.indexOf(currentPage);
     if (pageIndex === -1) {
       sidePagerEl.hidden = true;
       return;
@@ -988,7 +989,7 @@
   }
 
   function getDirectionForTarget(targetPage) {
-    const currentIndex = pageOrder.indexOf(page);
+    const currentIndex = pageOrder.indexOf(currentPage);
     const targetIndex = pageOrder.indexOf(targetPage);
     if (currentIndex === -1 || targetIndex === -1 || currentIndex === targetIndex) return 1;
     const forwardSteps = (targetIndex - currentIndex + pageOrder.length) % pageOrder.length;
@@ -996,21 +997,42 @@
     return forwardSteps <= backwardSteps ? 1 : -1;
   }
 
-  function readPendingTransition() {
-    try {
-      const raw = sessionStorage.getItem(PAGE_TRANSITION_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      const currentFile = window.location.pathname.split('/').pop() || 'index.html';
-      const targetFile = String(parsed?.targetPath || '').split('/').pop() || '';
-      if (targetFile && targetFile === currentFile) {
-        sessionStorage.removeItem(PAGE_TRANSITION_KEY);
-        return parsed;
-      }
-    } catch {}
-    sessionStorage.removeItem(PAGE_TRANSITION_KEY);
-    return null;
+  function updateRoute(pageName, { replace = false } = {}) {
+    const nextPath = pageFiles[pageName];
+    if (!nextPath) return;
+    const nextUrl = new URL(nextPath, window.location.href);
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.pathname === nextUrl.pathname) return;
+    const state = { page: pageName };
+    if (replace) {
+      history.replaceState(state, '', nextUrl.pathname);
+    } else {
+      history.pushState(state, '', nextUrl.pathname);
+    }
   }
+
+  function applyCurrentPage({ updateHistory = false, replaceHistory = false } = {}) {
+    document.body.dataset.page = currentPage;
+    updateNavAndCopy(currentLang);
+    Object.entries(navLinks).forEach(([name, link]) => {
+      if (!link) return;
+      if (name === currentPage) {
+        link.setAttribute('aria-current', 'page');
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    });
+    if (updateHistory) {
+      updateRoute(currentPage, { replace: replaceHistory });
+    }
+  }
+
+  window.addEventListener('popstate', () => {
+    const pathPage = getPageNameFromHref(window.location.href) || initialPage;
+    if (pathPage && pathPage !== currentPage) {
+      startPageTransition(pathPage, getDirectionForTarget(pathPage), { historyMode: 'none', duration: 700 });
+    }
+  });
 
   function easeOutQuint(t) {
     return 1 - Math.pow(1 - t, 5);
@@ -1056,28 +1078,36 @@
     }
   }
 
-  function startPageTransition(targetPage, explicitDirection) {
-    if (!targetPage || !pageFiles[targetPage] || transitionState.phase === 'leave') return;
-    const targetUrl = new URL(pageFiles[targetPage], window.location.href);
+  function startPageTransition(targetPage, explicitDirection, options = {}) {
+    if (!targetPage || !pageFiles[targetPage] || targetPage === currentPage) return;
+    if (transitionState.phase !== 'idle') return;
     const direction = explicitDirection || getDirectionForTarget(targetPage);
     transitionState.phase = 'leave';
     transitionState.direction = direction;
-    transitionState.duration = 640;
+    transitionState.duration = options.duration || 760;
     transitionState.startedAt = performance.now();
-    transitionState.targetUrl = targetUrl.toString();
-    transitionState.navigated = false;
+    transitionState.pendingPage = targetPage;
+    transitionState.swapped = false;
+    transitionState.historyMode = options.historyMode || 'push';
+    if (transitionState.historyMode === 'push') {
+      updateRoute(targetPage);
+    } else if (transitionState.historyMode === 'replace') {
+      updateRoute(targetPage, { replace: true });
+    }
     document.body.classList.add('is-page-transitioning');
-    sessionStorage.setItem(PAGE_TRANSITION_KEY, JSON.stringify({
-      direction,
-      targetPath: targetUrl.pathname,
-      at: Date.now(),
-    }));
+  }
+
+  function swapToPendingPage() {
+    if (!transitionState.pendingPage) return;
+    currentPage = transitionState.pendingPage;
+    currentConfig = copy[currentLang].pages[currentPage] || copy.en.pages.home;
+    applyCurrentPage();
   }
 
   function handleInternalPageLink(event) {
     const anchor = event.currentTarget;
     const targetPage = anchor.dataset.pageTarget || getPageNameFromHref(anchor.getAttribute('href') || anchor.href);
-    if (!targetPage || targetPage === page) return;
+    if (!targetPage || targetPage === currentPage) return;
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     startPageTransition(targetPage);
@@ -1088,7 +1118,7 @@
 
   function updateNavAndCopy(lang) {
     const langCopy = copy[lang];
-    const pageCopy = langCopy.pages[page] || copy.en.pages.home;
+    const pageCopy = langCopy.pages[currentPage] || copy.en.pages.home;
     currentConfig = pageCopy;
     document.documentElement.lang = langCopy.htmlLang;
     document.title = pageCopy.title;
@@ -1097,7 +1127,7 @@
     if (navEl) navEl.setAttribute('aria-label', langCopy.navLabel);
     renderQuickLinks(pageCopy.actions || []);
     renderSidePager(lang);
-    applyPageTheme(page);
+    applyPageTheme(currentPage);
     if (navLinks.home) navLinks.home.textContent = langCopy.nav.home;
     if (navLinks.about) navLinks.about.textContent = langCopy.nav.about;
     if (navLinks.projects) navLinks.projects.textContent = langCopy.nav.projects;
@@ -1323,13 +1353,15 @@
     if (transitionState.phase !== 'idle') {
       const progress = Math.min(1, (now - transitionState.startedAt) / transitionState.duration);
       setTransitionPose(progress, transitionState.direction, transitionState.phase);
-      if (transitionState.phase === 'leave' && !transitionState.navigated && progress >= 0.7) {
-        transitionState.navigated = true;
-        window.location.href = transitionState.targetUrl;
-        return;
-      }
-      if (progress >= 1) {
+      if (transitionState.phase === 'leave' && !transitionState.swapped && progress >= 0.5) {
+        transitionState.swapped = true;
+        swapToPendingPage();
+        transitionState.phase = 'enter';
+        transitionState.startedAt = now;
+      } else if (transitionState.phase === 'enter' && progress >= 1) {
         transitionState.phase = 'idle';
+        transitionState.pendingPage = null;
+        transitionState.swapped = false;
         clearTransitionPose();
         document.body.classList.remove('is-page-transitioning');
       }
@@ -1341,18 +1373,8 @@
     renderer.render(scene, camera);
   }
 
-  setLanguage(currentLang);
-  const pendingTransition = readPendingTransition();
-  if (pendingTransition) {
-    transitionState.phase = 'enter';
-    transitionState.direction = Number(pendingTransition.direction) || 1;
-    transitionState.startedAt = performance.now();
-    transitionState.duration = 760;
-    document.body.classList.add('is-page-transitioning');
-    setTransitionPose(0, transitionState.direction, 'enter');
-  } else {
-    clearTransitionPose();
-  }
+  applyCurrentPage({ updateHistory: true, replaceHistory: true });
+  clearTransitionPose();
   requestAnimationFrame(animate);
 
   window.addEventListener('resize', () => {
