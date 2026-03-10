@@ -2,6 +2,7 @@
 (() => {
   const page = document.body.dataset.page || 'home';
   const PREFERRED_LANG_KEY = 'duang-site-lang';
+  const PAGE_TRANSITION_KEY = 'duang-site-page-transition';
   const defaultLang = 'en';
 
   const copy = {
@@ -462,6 +463,7 @@
     collection: './collection.html',
     contact: './contact.html',
   };
+  const pageFileToName = Object.fromEntries(Object.entries(pageFiles).map(([name, path]) => [path.replace('./', ''), name]));
   const quickLinksEl = document.createElement('div');
   quickLinksEl.className = 'quick-links';
   quickLinksEl.hidden = true;
@@ -907,6 +909,21 @@
   receiptMesh.castShadow = true;
   scene.add(receiptMesh);
 
+  const transitionState = {
+    phase: 'idle',
+    direction: 1,
+    startedAt: 0,
+    duration: 720,
+    targetUrl: null,
+    navigated: false,
+    uiOpacity: 1,
+    uiOffsetX: 0,
+    meshX: 0,
+    meshRotation: 0,
+    meshZ: 0,
+    shadowFactor: 1,
+  };
+
   function applyPageTheme(pageName) {
     const theme = pageThemes[pageName] || pageThemes.home;
     Object.entries(theme.css).forEach(([key, value]) => {
@@ -944,16 +961,126 @@
     const nextPage = pageOrder[(pageIndex + 1) % pageOrder.length];
 
     prevPageLinkEl.href = pageFiles[prevPage];
+    prevPageLinkEl.dataset.pageTarget = prevPage;
     prevPageLinkEl.setAttribute('aria-label', `${langCopy.pager.prevAria}: ${langCopy.nav[prevPage]}`);
     prevPageMetaEl.textContent = langCopy.pager.prev;
     prevPageLabelEl.textContent = langCopy.nav[prevPage];
 
     nextPageLinkEl.href = pageFiles[nextPage];
+    nextPageLinkEl.dataset.pageTarget = nextPage;
     nextPageLinkEl.setAttribute('aria-label', `${langCopy.pager.nextAria}: ${langCopy.nav[nextPage]}`);
     nextPageMetaEl.textContent = langCopy.pager.next;
     nextPageLabelEl.textContent = langCopy.nav[nextPage];
 
     sidePagerEl.hidden = false;
+  }
+
+  function getPageNameFromHref(href) {
+    if (!href) return null;
+    try {
+      const url = new URL(href, window.location.href);
+      if (url.origin !== window.location.origin) return null;
+      const fileName = url.pathname.split('/').pop() || 'index.html';
+      return pageFileToName[fileName] || null;
+    } catch {
+      return null;
+    }
+  }
+
+  function getDirectionForTarget(targetPage) {
+    const currentIndex = pageOrder.indexOf(page);
+    const targetIndex = pageOrder.indexOf(targetPage);
+    if (currentIndex === -1 || targetIndex === -1 || currentIndex === targetIndex) return 1;
+    const forwardSteps = (targetIndex - currentIndex + pageOrder.length) % pageOrder.length;
+    const backwardSteps = (currentIndex - targetIndex + pageOrder.length) % pageOrder.length;
+    return forwardSteps <= backwardSteps ? 1 : -1;
+  }
+
+  function readPendingTransition() {
+    try {
+      const raw = sessionStorage.getItem(PAGE_TRANSITION_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      const currentFile = window.location.pathname.split('/').pop() || 'index.html';
+      const targetFile = String(parsed?.targetPath || '').split('/').pop() || '';
+      if (targetFile && targetFile === currentFile) {
+        sessionStorage.removeItem(PAGE_TRANSITION_KEY);
+        return parsed;
+      }
+    } catch {}
+    sessionStorage.removeItem(PAGE_TRANSITION_KEY);
+    return null;
+  }
+
+  function easeOutQuint(t) {
+    return 1 - Math.pow(1 - t, 5);
+  }
+
+  function setTransitionPose(progress, direction, phase) {
+    const xDistance = window.innerWidth <= 980 ? 1.75 : 2.25;
+    const zLift = 0.22;
+    const rotation = window.innerWidth <= 980 ? 0.12 : 0.18;
+    const uiShift = window.innerWidth <= 980 ? 24 : 56;
+    const eased = phase === 'enter' ? 1 - easeOutQuint(progress) : easeOutQuint(progress);
+    transitionState.meshX = direction * xDistance * eased;
+    transitionState.meshRotation = direction * rotation * eased;
+    transitionState.meshZ = zLift * eased;
+    transitionState.uiOffsetX = direction * uiShift * eased;
+    transitionState.uiOpacity = phase === 'enter' ? 1 - 0.7 * eased : 1 - 0.78 * eased;
+    transitionState.shadowFactor = phase === 'enter' ? 1 - 0.28 * eased : 1 - 0.36 * eased;
+
+    receiptMesh.position.x = transitionState.meshX;
+    receiptMesh.position.z = transitionState.meshZ;
+    receiptMesh.rotation.z = transitionState.meshRotation;
+    contactShadow.position.x = transitionState.meshX * 0.9;
+    if (siteUiEl) {
+      siteUiEl.style.opacity = String(transitionState.uiOpacity);
+      siteUiEl.style.transform = `translate3d(${transitionState.uiOffsetX}px, 0, 0)`;
+    }
+  }
+
+  function clearTransitionPose() {
+    transitionState.meshX = 0;
+    transitionState.meshRotation = 0;
+    transitionState.meshZ = 0;
+    transitionState.uiOffsetX = 0;
+    transitionState.uiOpacity = 1;
+    transitionState.shadowFactor = 1;
+    receiptMesh.position.x = 0;
+    receiptMesh.position.z = 0;
+    receiptMesh.rotation.z = 0;
+    contactShadow.position.x = 0;
+    if (siteUiEl) {
+      siteUiEl.style.opacity = '1';
+      siteUiEl.style.transform = 'translate3d(0, 0, 0)';
+    }
+  }
+
+  function startPageTransition(targetPage, explicitDirection) {
+    if (!targetPage || !pageFiles[targetPage] || transitionState.phase === 'leave') return;
+    const targetUrl = new URL(pageFiles[targetPage], window.location.href);
+    const direction = explicitDirection || getDirectionForTarget(targetPage);
+    transitionState.phase = 'leave';
+    transitionState.direction = direction;
+    transitionState.duration = 640;
+    transitionState.startedAt = performance.now();
+    transitionState.targetUrl = targetUrl.toString();
+    transitionState.navigated = false;
+    document.body.classList.add('is-page-transitioning');
+    sessionStorage.setItem(PAGE_TRANSITION_KEY, JSON.stringify({
+      direction,
+      targetPath: targetUrl.pathname,
+      at: Date.now(),
+    }));
+  }
+
+  function handleInternalPageLink(event) {
+    const anchor = event.currentTarget;
+    const targetPage = anchor.dataset.pageTarget || getPageNameFromHref(anchor.getAttribute('href') || anchor.href);
+    if (!targetPage || targetPage === page) return;
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    startPageTransition(targetPage);
   }
 
   const dragState = { active: false, index: -1, point: new THREE.Vector3(), radius: 2.25 };
@@ -993,14 +1120,22 @@
     btn.addEventListener('click', () => setLanguage(btn.dataset.langBtn));
   });
 
+  Object.values(navLinks).forEach(link => {
+    if (link) link.addEventListener('click', handleInternalPageLink);
+  });
+  prevPageLinkEl.addEventListener('click', handleInternalPageLink);
+  nextPageLinkEl.addEventListener('click', handleInternalPageLink);
+
   window.addEventListener('keydown', (event) => {
     if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
     const activeTag = document.activeElement?.tagName;
     if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
     if (event.key === 'ArrowLeft') {
-      prevPageLinkEl.click();
+      event.preventDefault();
+      startPageTransition(prevPageLinkEl.dataset.pageTarget, -1);
     } else if (event.key === 'ArrowRight') {
-      nextPageLinkEl.click();
+      event.preventDefault();
+      startPageTransition(nextPageLinkEl.dataset.pageTarget, 1);
     }
   });
 
@@ -1016,7 +1151,7 @@
   }
 
   function onPointerDown(event) {
-    if (event.button !== 0) return;
+    if (event.button !== 0 || transitionState.phase !== 'idle') return;
     updatePointer(event);
     raycaster.setFromCamera(pointer, camera);
     const hit = raycaster.intersectObject(receiptMesh, true)[0];
@@ -1032,6 +1167,7 @@
   }
   function onPointerMove(event) {
     updatePointer(event);
+    if (transitionState.phase !== 'idle') return;
     if (!dragState.active) return;
     raycaster.setFromCamera(pointer, camera);
     if (raycaster.ray.intersectPlane(dragPlane, dragTarget)) {
@@ -1049,7 +1185,7 @@
   window.addEventListener('pointerdown', onPointerDown);
   window.addEventListener('pointermove', onPointerMove);
   window.addEventListener('mousemove', (event) => {
-    if (dragState.active) return;
+    if (dragState.active || transitionState.phase !== 'idle') return;
     updatePointer(event);
     raycaster.setFromCamera(pointer, camera);
     const hit = raycaster.intersectObject(receiptMesh, true)[0];
@@ -1183,12 +1319,40 @@
       solveConstraints();
       accumulator -= maxStep;
     }
+
+    if (transitionState.phase !== 'idle') {
+      const progress = Math.min(1, (now - transitionState.startedAt) / transitionState.duration);
+      setTransitionPose(progress, transitionState.direction, transitionState.phase);
+      if (transitionState.phase === 'leave' && !transitionState.navigated && progress >= 0.7) {
+        transitionState.navigated = true;
+        window.location.href = transitionState.targetUrl;
+        return;
+      }
+      if (progress >= 1) {
+        transitionState.phase = 'idle';
+        clearTransitionPose();
+        document.body.classList.remove('is-page-transitioning');
+      }
+    }
+
     updateGeometry();
-    contactShadow.material.opacity = 0.06 + Math.min(0.06, Math.abs(particles[idx(Math.floor(cols / 2), rows - 1)].current.z) * 0.12);
+    const baseShadowOpacity = 0.06 + Math.min(0.06, Math.abs(particles[idx(Math.floor(cols / 2), rows - 1)].current.z) * 0.12);
+    contactShadow.material.opacity = baseShadowOpacity * transitionState.shadowFactor;
     renderer.render(scene, camera);
   }
 
   setLanguage(currentLang);
+  const pendingTransition = readPendingTransition();
+  if (pendingTransition) {
+    transitionState.phase = 'enter';
+    transitionState.direction = Number(pendingTransition.direction) || 1;
+    transitionState.startedAt = performance.now();
+    transitionState.duration = 760;
+    document.body.classList.add('is-page-transitioning');
+    setTransitionPose(0, transitionState.direction, 'enter');
+  } else {
+    clearTransitionPose();
+  }
   requestAnimationFrame(animate);
 
   window.addEventListener('resize', () => {
