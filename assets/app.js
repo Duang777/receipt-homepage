@@ -1037,18 +1037,8 @@
   }
 
   function applyPagerPaperTextures(langCopy, prevPage, nextPage) {
-    const prevDataUrl = createPagerPaperDataUrl({
-      direction: 'prev',
-      kicker: langCopy?.pager?.prev || 'Previous',
-      label: langCopy?.nav?.[prevPage] || prevPage,
-    });
-    const nextDataUrl = createPagerPaperDataUrl({
-      direction: 'next',
-      kicker: langCopy?.pager?.next || 'Next',
-      label: langCopy?.nav?.[nextPage] || nextPage,
-    });
-    prevPageLinkEl.style.backgroundImage = `url("${prevDataUrl}")`;
-    nextPageLinkEl.style.backgroundImage = `url("${nextDataUrl}")`;
+    prevPageLinkEl.style.backgroundImage = 'none';
+    nextPageLinkEl.style.backgroundImage = 'none';
   }
 
   const receiptGeometry = new THREE.BufferGeometry();
