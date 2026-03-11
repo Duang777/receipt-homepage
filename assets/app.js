@@ -763,6 +763,36 @@
     }
     ctx.stroke();
 
+    ctx.save();
+    ctx.globalAlpha = 0.42;
+    for (let y = 80; y < canvas.height - 48; y += 20) {
+      const offset = (y / 20) % 2 === 0 ? 0 : 8;
+      ctx.strokeStyle = 'rgba(176,160,140,0.46)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(24 + offset, y);
+      ctx.lineTo(36 - offset * 0.18, y + 10);
+      ctx.lineTo(24 + offset, y + 20);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(canvas.width - 24 - offset, y);
+      ctx.lineTo(canvas.width - 36 + offset * 0.18, y + 10);
+      ctx.lineTo(canvas.width - 24 - offset, y + 20);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    const edgeShade = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    edgeShade.addColorStop(0, 'rgba(112,94,72,0.095)');
+    edgeShade.addColorStop(0.06, 'rgba(112,94,72,0.02)');
+    edgeShade.addColorStop(0.12, 'rgba(255,255,255,0.01)');
+    edgeShade.addColorStop(0.88, 'rgba(255,255,255,0.01)');
+    edgeShade.addColorStop(0.94, 'rgba(112,94,72,0.02)');
+    edgeShade.addColorStop(1, 'rgba(112,94,72,0.105)');
+    ctx.fillStyle = edgeShade;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     const titleSize = fitText(pageData.title, CONTENT_WIDTH - 140, 72, 44, 900);
     setMono(900, titleSize, '#1d1a16');
     ctx.fillText(pageData.title, LEFT, 178);
@@ -784,6 +814,18 @@
       ctx.fillText(value, valueX, y);
       y += 54;
     }
+
+    ctx.save();
+    ctx.globalAlpha = 0.2;
+    ctx.strokeStyle = 'rgba(0,0,0,0.05)';
+    ctx.lineWidth = 1;
+    for (let ruleY = 286; ruleY < canvas.height - 120; ruleY += 26) {
+      ctx.beginPath();
+      ctx.moveTo(54, ruleY);
+      ctx.lineTo(canvas.width - 54, ruleY);
+      ctx.stroke();
+    }
+    ctx.restore();
 
     setMono(600, 26, '#7c7368');
     ctx.fillText('---------------------------------------------', LEFT, y + 22);
