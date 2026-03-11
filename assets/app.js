@@ -706,23 +706,51 @@
     ctx.fillStyle = '#fbf7ee';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const paperGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    paperGradient.addColorStop(0, 'rgba(255,255,255,0.00)');
-    paperGradient.addColorStop(0.55, 'rgba(0,0,0,0.015)');
-    paperGradient.addColorStop(1, 'rgba(0,0,0,0.04)');
-    ctx.fillStyle = paperGradient;
+    const verticalTone = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    verticalTone.addColorStop(0, 'rgba(255,255,255,0.02)');
+    verticalTone.addColorStop(0.2, 'rgba(255,249,241,0.02)');
+    verticalTone.addColorStop(0.58, 'rgba(0,0,0,0.018)');
+    verticalTone.addColorStop(1, 'rgba(0,0,0,0.045)');
+    ctx.fillStyle = verticalTone;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    for (let i = 0; i < 8000; i++) {
-      const alpha = Math.random() * 0.03;
-      const shade = 236 + Math.random() * 15;
+    const sideTone = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    sideTone.addColorStop(0, 'rgba(110,92,70,0.05)');
+    sideTone.addColorStop(0.16, 'rgba(255,255,255,0.024)');
+    sideTone.addColorStop(0.5, 'rgba(255,255,255,0.012)');
+    sideTone.addColorStop(0.84, 'rgba(255,255,255,0.02)');
+    sideTone.addColorStop(1, 'rgba(110,92,70,0.065)');
+    ctx.fillStyle = sideTone;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const centerBulge = ctx.createRadialGradient(canvas.width * 0.5, canvas.height * 0.48, canvas.width * 0.08, canvas.width * 0.5, canvas.height * 0.5, canvas.width * 0.62);
+    centerBulge.addColorStop(0, 'rgba(255,255,255,0.055)');
+    centerBulge.addColorStop(0.32, 'rgba(255,255,255,0.025)');
+    centerBulge.addColorStop(0.7, 'rgba(0,0,0,0.012)');
+    centerBulge.addColorStop(1, 'rgba(0,0,0,0.03)');
+    ctx.fillStyle = centerBulge;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < 9500; i++) {
+      const alpha = Math.random() * 0.035;
+      const shade = 234 + Math.random() * 17;
       ctx.fillStyle = `rgba(${shade}, ${shade - 4}, ${shade - 8}, ${alpha})`;
       const x = Math.random() * canvas.width;
       const y = Math.random() * canvas.height;
-      const r = Math.random() * 1.8;
+      const r = Math.random() * 1.7;
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fill();
+    }
+
+    for (let i = 0; i < 1300; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const w = 8 + Math.random() * 32;
+      const h = 1 + Math.random() * 2;
+      const alpha = 0.012 + Math.random() * 0.02;
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.fillRect(x, y, w, h);
     }
 
     ctx.strokeStyle = '#e7ddcd';
@@ -806,15 +834,46 @@
     ctx.fillText(pageData.stamp, 0, 12);
     ctx.restore();
 
-    ctx.strokeStyle = 'rgba(0,0,0,0.03)';
-    ctx.lineWidth = 2;
-    for (let line = 0; line < 22; line++) {
-      const lineY = 760 + line * 72;
+    ctx.save();
+    ctx.globalAlpha = 0.16;
+    for (let line = 0; line < 44; line++) {
+      const lineY = 706 + line * 36;
+      const jitter = (Math.random() - 0.5) * 2.4;
+      ctx.strokeStyle = line % 2 === 0 ? 'rgba(110,92,70,0.11)' : 'rgba(255,255,255,0.045)';
+      ctx.lineWidth = line % 2 === 0 ? 1.2 : 0.7;
       ctx.beginPath();
-      ctx.moveTo(LEFT, lineY + 18);
-      ctx.lineTo(canvas.width - 120, lineY + 18);
+      ctx.moveTo(LEFT, lineY + jitter);
+      ctx.lineTo(canvas.width - 120, lineY + jitter);
       ctx.stroke();
     }
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = 0.08;
+    ctx.translate(0, canvas.height * 0.42);
+    ctx.rotate(-0.06);
+    const wrinkleA = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    wrinkleA.addColorStop(0, 'rgba(255,255,255,0)');
+    wrinkleA.addColorStop(0.46, 'rgba(255,255,255,0.5)');
+    wrinkleA.addColorStop(0.5, 'rgba(0,0,0,0.4)');
+    wrinkleA.addColorStop(0.54, 'rgba(255,255,255,0.18)');
+    wrinkleA.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = wrinkleA;
+    ctx.fillRect(0, 0, canvas.width, 54);
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = 0.06;
+    ctx.translate(0, canvas.height * 0.58);
+    ctx.rotate(0.045);
+    const wrinkleB = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    wrinkleB.addColorStop(0, 'rgba(255,255,255,0)');
+    wrinkleB.addColorStop(0.48, 'rgba(0,0,0,0.32)');
+    wrinkleB.addColorStop(0.52, 'rgba(255,255,255,0.26)');
+    wrinkleB.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = wrinkleB;
+    ctx.fillRect(0, 0, canvas.width, 42);
+    ctx.restore();
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -829,18 +888,125 @@
     canvas.height = 256;
     const ctx = canvas.getContext('2d');
     const img = ctx.createImageData(canvas.width, canvas.height);
-    for (let i = 0; i < img.data.length; i += 4) {
-      const grain = 128 + (Math.random() - 0.5) * 20;
-      img.data[i] = grain;
-      img.data[i + 1] = 128 + (Math.random() - 0.5) * 20;
-      img.data[i + 2] = 255;
-      img.data[i + 3] = 255;
+    for (let y = 0; y < canvas.height; y++) {
+      for (let x = 0; x < canvas.width; x++) {
+        const i = (y * canvas.width + x) * 4;
+        const grain = 128 + (Math.random() - 0.5) * 24;
+        const fiber = Math.sin(y * 0.22 + x * 0.03) * 6;
+        const crease = Math.sin(y * 0.05) * 3;
+        img.data[i] = grain + fiber;
+        img.data[i + 1] = 128 + (Math.random() - 0.5) * 18 + crease;
+        img.data[i + 2] = 255;
+        img.data[i + 3] = 255;
+      }
     }
     ctx.putImageData(img, 0, 0);
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(6, 12);
+    texture.repeat.set(7, 16);
     return texture;
+  }
+
+  function createPagerPaperDataUrl({ direction = 'prev', kicker = '', label = '' } = {}) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 420;
+    canvas.height = 220;
+    const ctx = canvas.getContext('2d');
+
+    const setMono = (weight, size, color = '#1d1a16', align = 'left') => {
+      ctx.font = `${weight} ${size}px "SFMono-Regular", "JetBrains Mono", "IBM Plex Mono", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", monospace`;
+      ctx.fillStyle = color;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'alphabetic';
+    };
+
+    const fitText = (text, maxWidth, startSize, minSize, weight = 700) => {
+      let size = startSize;
+      while (size > minSize) {
+        setMono(weight, size);
+        if (ctx.measureText(text).width <= maxWidth) break;
+        size -= 1;
+      }
+      return size;
+    };
+
+    ctx.fillStyle = '#fbf7ee';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const paperGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    paperGradient.addColorStop(0, 'rgba(255,255,255,0.00)');
+    paperGradient.addColorStop(0.55, 'rgba(0,0,0,0.015)');
+    paperGradient.addColorStop(1, 'rgba(0,0,0,0.04)');
+    ctx.fillStyle = paperGradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < 1800; i++) {
+      const alpha = Math.random() * 0.03;
+      const shade = 236 + Math.random() * 15;
+      ctx.fillStyle = `rgba(${shade}, ${shade - 4}, ${shade - 8}, ${alpha})`;
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const r = Math.random() * 1.75;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.strokeStyle = '#e7ddcd';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const notch = 14;
+    if (direction === 'prev') {
+      for (let y = 0; y <= canvas.height + notch; y += notch) {
+        const px = y % (notch * 2) === 0 ? canvas.width - 12 : canvas.width - 26;
+        ctx.lineTo(px, y);
+      }
+    } else {
+      for (let y = 0; y <= canvas.height + notch; y += notch) {
+        const px = y % (notch * 2) === 0 ? 12 : 26;
+        ctx.lineTo(px, y);
+      }
+    }
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(0,0,0,0.03)';
+    ctx.lineWidth = 1;
+    for (let y = 28; y < canvas.height; y += 26) {
+      ctx.beginPath();
+      ctx.moveTo(16, y);
+      ctx.lineTo(canvas.width - 16, y);
+      ctx.stroke();
+    }
+
+    setMono(600, 16, '#7c7368');
+    ctx.fillText(kicker.toUpperCase(), 28, 48);
+
+    const labelSize = fitText(label, 230, 44, 26, 900);
+    setMono(900, labelSize, '#1f1b17');
+    ctx.fillText(label, 28, 122);
+
+    setMono(600, 18, '#6f685f');
+    ctx.fillText(direction === 'prev' ? 'RECEIPT STRIP' : 'THERMAL TAB', 28, 182);
+
+    setMono(900, 58, '#2b2621', 'center');
+    ctx.fillText(direction === 'prev' ? '←' : '→', canvas.width - 70, 136);
+
+    return canvas.toDataURL('image/png');
+  }
+
+  function applyPagerPaperTextures(langCopy, prevPage, nextPage) {
+    const prevDataUrl = createPagerPaperDataUrl({
+      direction: 'prev',
+      kicker: langCopy?.pager?.prev || 'Previous',
+      label: langCopy?.nav?.[prevPage] || prevPage,
+    });
+    const nextDataUrl = createPagerPaperDataUrl({
+      direction: 'next',
+      kicker: langCopy?.pager?.next || 'Next',
+      label: langCopy?.nav?.[nextPage] || nextPage,
+    });
+    prevPageLinkEl.style.backgroundImage = `url("${prevDataUrl}")`;
+    nextPageLinkEl.style.backgroundImage = `url("${nextDataUrl}")`;
   }
 
   const receiptGeometry = new THREE.BufferGeometry();
@@ -895,13 +1061,13 @@
     color: new THREE.Color(0xfbf6ed),
     map: createReceiptTexture(currentConfig.receipt),
     normalMap: createPaperNormalTexture(),
-    normalScale: new THREE.Vector2(0.25, 0.25),
-    roughness: 0.96,
+    normalScale: new THREE.Vector2(0.38, 0.5),
+    roughness: 0.985,
     metalness: 0,
-    sheen: 0.25,
-    sheenColor: new THREE.Color(0xfff3e7),
-    clearcoat: 0.02,
-    clearcoatRoughness: 0.9,
+    sheen: 0.32,
+    sheenColor: new THREE.Color(0xfff1e4),
+    clearcoat: 0.01,
+    clearcoatRoughness: 1,
     side: THREE.DoubleSide,
   });
 
@@ -975,6 +1141,7 @@
     nextPageMetaEl.textContent = langCopy.pager.next;
     nextPageLabelEl.textContent = langCopy.nav[nextPage];
 
+    applyPagerPaperTextures(langCopy, prevPage, nextPage);
     sidePagerEl.hidden = false;
   }
 
