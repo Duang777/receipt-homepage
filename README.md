@@ -1,6 +1,6 @@
 # Personal Homepage Receipt
 
-A static GitHub Pages-friendly personal homepage built with Three.js + WebGL.
+Interactive Three.js receipt-style personal homepage for **Duang777**.
 
 ## Live Site
 
@@ -9,18 +9,17 @@ A static GitHub Pages-friendly personal homepage built with Three.js + WebGL.
 
 ## Local Preview
 
-Open `index.html` directly in a browser, or run:
-
 ```bash
 python3 -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`.
+Open http://localhost:8000
+
+## Content
+
+Copy for EN/ZH receipts lives in `assets/app.js` (`copy.en` / `copy.zh`).  
+Projects and Contact pages expose quick-link chips to the live demos.
 
 ## Deploy
 
-This repo is deployed with GitHub Pages from the `main` branch root.
-
-If you update the site locally, commit and push to `main`, then GitHub Pages will publish the latest version to:
-
-- https://duang777.github.io/receipt-homepage/
+GitHub Pages serves the `main` branch root. Push to `main` to publish.
